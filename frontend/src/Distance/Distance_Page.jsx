@@ -13,7 +13,7 @@ function Distance_Page(){
                 <div style={ { width:"50vw", height:"100%"}}>
                     <Maps/>
                 </div>
-                <div style={ {border :"2px solid red", width:"50vw"}}>
+                <div style={ {width:"50vw", marginLeft:"20px"}}>
                     <SearchBox/>
                 </div>
             </div>

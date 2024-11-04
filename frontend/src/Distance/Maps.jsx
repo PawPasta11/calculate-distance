@@ -5,7 +5,7 @@ import L from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
 
 // Cái nàydungfg để biến các icon trong thư viện react thành các icon trong leaflet cho phần giao diện địa chỉ trên map
-function CustomIcon() {
+export function CustomIcon() {
     const svg = renderToStaticMarkup(<IoLocationSharp size={30} color="Blue" />);
     return L.divIcon({
         className: 'custom-icon',
