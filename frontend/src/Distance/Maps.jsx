@@ -1,10 +1,11 @@
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { IoLocationSharp } from "react-icons/io5";
 import L from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
+import { useEffect } from "react";
 
-// Cái nàydungfg để biến các icon trong thư viện react thành các icon trong leaflet cho phần giao diện địa chỉ trên map
+// Cái này dùng để biến các icon trong thư viện react thành các icon trong leaflet cho phần giao diện địa chỉ trên map
 export function CustomIcon() {
     const svg = renderToStaticMarkup(<IoLocationSharp size={30} color="Blue" />);
     return L.divIcon({
@@ -15,22 +16,51 @@ export function CustomIcon() {
     });
 }
 
-function Maps() {
-    const position = [51.505, -0.09];
+const position = [51.505, -0.09];
+const apiKey = import.meta.env.VITE_MAPTILER_KEY;
+console.log(apiKey)
+
+function ResetCenterView(props){
+    const { selectPosition} = props;// eslint-disable-line
+    const map = useMap();
+
+    useEffect(() => {
+        if(selectPosition){
+            map.setView(
+                L.latLng(selectPosition?.lat, selectPosition?.lon),// eslint-disable-line
+                map.getZoom(),
+                {
+                    animate: true,
+                }
+            )
+        }   
+    }, [selectPosition]);// eslint-disable-line
+
+    return null;
+    
+}
+
+export default function Maps(props) {
+   const {selectPosition} = props;// eslint-disable-line
+   const locationSelection = selectPosition ? [selectPosition.lat, selectPosition.lon] : null;// eslint-disable-line
 
     return (
         <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ width: "100%", height: "100%" }}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=nFwD4CnCSazo8jfDPWDw"
+                url={`https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=${apiKey}`}
             />
-            <Marker position={position} icon={CustomIcon()}>
+            { selectPosition && (
+            <Marker position={locationSelection} icon={CustomIcon()}>
                 <Popup>
                     A pretty CSS3 popup. <br /> Easily customizable.
                 </Popup>
             </Marker>
+            )}
+        
+            <ResetCenterView selectPosition={selectPosition}/>
         </MapContainer>
     );
 }
 
-export default Maps;
+

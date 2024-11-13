@@ -6,32 +6,68 @@ import ListItem from '@mui/material/ListItem';
 import { IoLocationSharp } from "react-icons/io5";
 import {useState} from "react";
 
-function SearchBox() {
-    const [searchText, setSearchText] = useState("");
+const NONIMATIM_BASE_URL = "https://nominatim.openstreetmap.org/search?";
 
+export default function SearchBox(props) {
+    const {selectPosition, setSelectPosition } = props// eslint-disable-line
+    const [searchText, setSearchText] = useState("");
+    const [listPlace, setListPlace] = useState([]);
+    console.log(searchText);
     return (
         <>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex' }}>
                     <div style={{ flex: 1 }}>
-                        <OutlinedInput style={{ width: '100%' }} value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+                        <OutlinedInput 
+                        style={{ width: '100%' }} 
+                        value={searchText} 
+                        onChange={(event) => {
+                            setSearchText(event.target.value);
+                        }}
+                         />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', padding: "0px 20px" }}>
-                        <Button variant="contained" href="#contained-buttons">
+                        <Button variant="contained" color="primary" onClick={() =>{
+                            //Search
+                            const params = {
+                                q: searchText,
+                                format: 'json',
+                                addressdetails: 1,
+                                polygon_geojson: 0,
+                                
+                            };
+                            const queryString = new URLSearchParams(params).toString();
+                            const requestOption = {
+                                method: "GET",
+                                redirect: "follow"
+                            };
+                            fetch(`${NONIMATIM_BASE_URL}${queryString}`, requestOption)
+                            .then((response) => response.text())
+                            .then((result) => {
+                                console.log(JSON.parse(result));
+                                setListPlace(JSON.parse(result));
+                                console.log(`${NONIMATIM_BASE_URL}${queryString}`)
+                            })
+                            .catch((err) => console.log("err: ", err))
+                        }}>
                             Search
                         </Button>
                     </div>
                 </div>
                 <List component="nav" aria-label="main mailbox folders">
                     {
-                        [1,2,3,4,5].map((item) => {
+                        listPlace.map((item) => {
                             return (
-                                <div key={item}>
-                                    <ListItem button>
+                                <div key={item?.osm_id}>
+                                    <ListItem 
+                                    button 
+                                    onClick={() =>{
+                                       setSelectPosition(item);
+                                    }}>
                                         <ListItemIcon>
                                             <IoLocationSharp size={30} color="Blue" />
                                         </ListItemIcon>
-                                        <ListItemText primary="Inbox" />
+                                        <ListItemText primary={item?.display_name} />
                                     </ListItem>
                                     <Divider/>
                                 </div>
@@ -45,4 +81,4 @@ function SearchBox() {
     );
 }
 
-export default SearchBox;
+
