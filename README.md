@@ -1,4 +1,4 @@
-# CALCULATE SHORTEST DISTANCE |
+# CALCULATE SHORTEST DISTANCE AND BASE ON BUSSINESS RULES TO CALCULATE THE COSTS
 ### Practise how to use API to Calculate Distacne
 
 * Back-end : Java Spring Boot
